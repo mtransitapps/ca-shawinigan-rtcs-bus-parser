@@ -142,7 +142,7 @@ public class ShawiniganRTCSBusAgencyTools extends DefaultAgencyTools {
 						Arrays.asList(new String[] { "100", "101", "141", //
 								"142", "49", //
 								"204", "206", //
-								"207", "208", "255", "5" })) //
+								"207", "208", "254", "255", "5" })) //
 				.compileBothTripSort());
 		map2.put(3l, new RouteTripSpec(3l, //
 				MDirectionType.NORTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, SAINT_GEORGES_DE_CHAMPLAIN_SHORT, //

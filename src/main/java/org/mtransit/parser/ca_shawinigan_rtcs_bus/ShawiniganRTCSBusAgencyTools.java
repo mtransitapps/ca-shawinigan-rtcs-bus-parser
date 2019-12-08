@@ -1,14 +1,8 @@
 package org.mtransit.parser.ca_shawinigan_rtcs_bus;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.regex.Pattern;
-
 import org.mtransit.parser.CleanUtils;
 import org.mtransit.parser.DefaultAgencyTools;
+import org.mtransit.parser.MTLog;
 import org.mtransit.parser.Pair;
 import org.mtransit.parser.SplitUtils;
 import org.mtransit.parser.SplitUtils.RouteTripSpec;
@@ -25,6 +19,13 @@ import org.mtransit.parser.mt.data.MDirectionType;
 import org.mtransit.parser.mt.data.MRoute;
 import org.mtransit.parser.mt.data.MTrip;
 import org.mtransit.parser.mt.data.MTripStop;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.regex.Pattern;
 
 // http://www.shawinigan.ca/Ville/donnees-ouvertes_195.html
 // https://donnees-shawinigan.opendata.arcgis.com/
@@ -45,11 +46,11 @@ public class ShawiniganRTCSBusAgencyTools extends DefaultAgencyTools {
 
 	@Override
 	public void start(String[] args) {
-		System.out.printf("\nGenerating RTCS bus data...");
+		MTLog.log("Generating RTCS bus data...");
 		long start = System.currentTimeMillis();
-		this.serviceIds = extractUsefulServiceIds(args, this);
+		this.serviceIds = extractUsefulServiceIds(args, this, true);
 		super.start(args);
-		System.out.printf("\nGenerating RTCS bus data... DONE in %s.\n", Utils.getPrettyDuration(System.currentTimeMillis() - start));
+		MTLog.log("Generating RTCS bus data... DONE in %s.", Utils.getPrettyDuration(System.currentTimeMillis() - start));
 	}
 
 	@Override
@@ -110,8 +111,7 @@ public class ShawiniganRTCSBusAgencyTools extends DefaultAgencyTools {
 			}
 
 		}
-		System.out.printf("\nUnexpected route long name %s!\n", gRoute);
-		System.exit(-1);
+		MTLog.logFatal("Unexpected route long name %s!", gRoute);
 		return null;
 	}
 
@@ -125,37 +125,56 @@ public class ShawiniganRTCSBusAgencyTools extends DefaultAgencyTools {
 	}
 
 	private static HashMap<Long, RouteTripSpec> ALL_ROUTE_TRIPS2;
+
 	static {
-		HashMap<Long, RouteTripSpec> map2 = new HashMap<Long, RouteTripSpec>();
-		map2.put(1l, new RouteTripSpec(1l, //
+		HashMap<Long, RouteTripSpec> map2 = new HashMap<>();
+		map2.put(1L, new RouteTripSpec(1L, //
 				MDirectionType.NORTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, SAINT_GEORGES_DE_CHAMPLAIN_SHORT, //
 				MDirectionType.SOUTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, SHAWINIGAN_SUD) //
 				.addTripSort(MDirectionType.NORTH.intValue(), //
-						Arrays.asList(new String[] { "259", "276", "99", "100" })) //
+						Arrays.asList(
+								"259",
+								"276",
+								"99",
+								"100"
+						)) //
 				.addTripSort(MDirectionType.SOUTH.intValue(), //
-						Arrays.asList(new String[] { "100", "101", "192", "259" })) //
+						Arrays.asList(
+								"100",
+								"101",
+								"192",
+								"259"
+						)) //
 				.compileBothTripSort());
-		map2.put(2l, new RouteTripSpec(2l, //
+		map2.put(2L, new RouteTripSpec(2L, //
 				MDirectionType.NORTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, SAINT_GEORGES_DE_CHAMPLAIN_SHORT, //
 				MDirectionType.SOUTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, SHAWINIGAN_SUD) //
 				.addTripSort(MDirectionType.NORTH.intValue(), //
-						Arrays.asList(new String[] { "5", "6", "234", "240", //
+						Arrays.asList(
+								"5", "6", "234", "240", //
 								"241", "243", //
 								"260", "52", //
-								"53", "99", "100" })) //
+								"53", "99", "100"
+						)) //
 				.addTripSort(MDirectionType.SOUTH.intValue(), //
-						Arrays.asList(new String[] { "100", "101", "141", //
+						Arrays.asList(
+								"100", "101", "141", //
 								"142", "49", //
 								"204", "206", //
-								"207", "208", "254", "255", "5" })) //
+								"207", "208", "254", "255", "5"
+						)) //
 				.compileBothTripSort());
-		map2.put(3l, new RouteTripSpec(3l, //
+		map2.put(3L, new RouteTripSpec(3L, //
 				MDirectionType.NORTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, SAINT_GEORGES_DE_CHAMPLAIN_SHORT, //
 				MDirectionType.SOUTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, SHAWINIGAN_SUD) //
 				.addTripSort(MDirectionType.NORTH.intValue(), //
-						Arrays.asList(new String[] { "259", "276", "99", "100" })) //
+						Arrays.asList(
+								"259", "276", "99", "100"
+						)) //
 				.addTripSort(MDirectionType.SOUTH.intValue(), //
-						Arrays.asList(new String[] { "100", "101", "192", "259" })) //
+						Arrays.asList(
+								"100", "101", "192", "259"
+						)) //
 				.compileBothTripSort());
 		ALL_ROUTE_TRIPS2 = map2;
 	}
@@ -189,8 +208,7 @@ public class ShawiniganRTCSBusAgencyTools extends DefaultAgencyTools {
 		if (ALL_ROUTE_TRIPS2.containsKey(mRoute.getId())) {
 			return; // split
 		}
-		System.out.printf("\n%s: Unexpected trip %s!\n", mRoute.getId(), gTrip);
-		System.exit(-1);
+		MTLog.logFatal("%s: Unexpected trip %s!", mRoute.getId(), gTrip);
 	}
 
 	@Override

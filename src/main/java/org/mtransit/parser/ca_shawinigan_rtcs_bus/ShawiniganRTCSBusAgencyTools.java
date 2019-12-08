@@ -27,8 +27,8 @@ import org.mtransit.parser.mt.data.MTrip;
 import org.mtransit.parser.mt.data.MTripStop;
 
 // http://www.shawinigan.ca/Ville/donnees-ouvertes_195.html
-// http://donnees.shawinigan.opendata.arcgis.com/
-// http://jmap.shawinigan.ca/doc/photos/google_transit.zip
+// https://donnees-shawinigan.opendata.arcgis.com/
+// https://jmap.shawinigan.ca/doc/photos/google_transit.zip
 public class ShawiniganRTCSBusAgencyTools extends DefaultAgencyTools {
 
 	public static void main(String[] args) {

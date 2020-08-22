@@ -98,21 +98,22 @@ public class ShawiniganRTCSBusAgencyTools extends DefaultAgencyTools {
 		int rsn = Integer.parseInt(gRoute.getRouteShortName());
 		switch (rsn) {
 		case 1:
-			if ("Saint-Georges-de-Champlain / Shawinigan-Sud, du lundi au vendredi".equalsIgnoreCase(gRoute.getRouteLongName())) {
+			if ("Saint-Georges / Shawinigan-Sud, du lundi au vendredi".equalsIgnoreCase(gRoute.getRouteLongName())) {
 				return "St-Georges / Shawinigan-Sud (lundi-vendredi)";
 			}
+			break;
 		case 2:
-			if ("Saint-Georges-de-Champlain / Shawinigan-Sud, du lundi au vendredi".equalsIgnoreCase(gRoute.getRouteLongName())) {
+			if ("Saint-Georges / Shawinigan-Sud, du lundi au vendredi".equalsIgnoreCase(gRoute.getRouteLongName())) {
 				return "St-Georges / Shawinigan-Sud (lundi-vendredi)";
 			}
+			break;
 		case 3:
-			if ("Saint-Georges-de-Champlain / Shawinigan-Sud, samedi, dimanche et ete".equalsIgnoreCase(gRoute.getRouteLongName())) {
+			if ("Saint-Georges / Shawinigan-Sud, samedi, dimanche et ete".equalsIgnoreCase(gRoute.getRouteLongName())) {
 				return "St-Georges / Shawinigan-Sud (samedi-dimanche-été)";
 			}
-
+			break;
 		}
-		MTLog.logFatal("Unexpected route long name %s!", gRoute);
-		return null;
+		throw new MTLog.Fatal("Unexpected route long name %s!", gRoute);
 	}
 
 	private static final String AGENCY_COLOR_BLUE = "003769"; // BLUE (from PNG logo)
@@ -208,7 +209,7 @@ public class ShawiniganRTCSBusAgencyTools extends DefaultAgencyTools {
 		if (ALL_ROUTE_TRIPS2.containsKey(mRoute.getId())) {
 			return; // split
 		}
-		MTLog.logFatal("%s: Unexpected trip %s!", mRoute.getId(), gTrip);
+		throw new MTLog.Fatal("%s: Unexpected trip %s!", mRoute.getId(), gTrip);
 	}
 
 	@Override

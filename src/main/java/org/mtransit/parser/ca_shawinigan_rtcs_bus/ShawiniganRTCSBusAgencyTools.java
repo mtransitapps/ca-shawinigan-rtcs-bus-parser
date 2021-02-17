@@ -2,15 +2,13 @@ package org.mtransit.parser.ca_shawinigan_rtcs_bus;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.mtransit.parser.CleanUtils;
+import org.mtransit.commons.CleanUtils;
+import org.mtransit.commons.RegexUtils;
 import org.mtransit.parser.DefaultAgencyTools;
 import org.mtransit.parser.MTLog;
 import org.mtransit.parser.Pair;
 import org.mtransit.parser.SplitUtils;
 import org.mtransit.parser.SplitUtils.RouteTripSpec;
-import org.mtransit.parser.Utils;
-import org.mtransit.parser.gtfs.data.GCalendar;
-import org.mtransit.parser.gtfs.data.GCalendarDate;
 import org.mtransit.parser.gtfs.data.GRoute;
 import org.mtransit.parser.gtfs.data.GSpec;
 import org.mtransit.parser.gtfs.data.GStop;
@@ -25,7 +23,6 @@ import org.mtransit.parser.mt.data.MTripStop;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.regex.Pattern;
@@ -37,55 +34,19 @@ import static org.mtransit.parser.StringUtils.EMPTY;
 // https://jmap.shawinigan.ca/doc/photos/google_transit.zip
 public class ShawiniganRTCSBusAgencyTools extends DefaultAgencyTools {
 
-	public static void main(@Nullable String[] args) {
-		if (args == null || args.length == 0) {
-			args = new String[3];
-			args[0] = "input/gtfs.zip";
-			args[1] = "../../mtransitapps/ca-shawinigan-rtcs-bus-android/res/raw/";
-			args[2] = ""; // files-prefix
-		}
+	public static void main(@NotNull String[] args) {
 		new ShawiniganRTCSBusAgencyTools().start(args);
 	}
 
-	@Nullable
-	private HashSet<Integer> serviceIdInts;
-
 	@Override
-	public void start(@NotNull String[] args) {
-		MTLog.log("Generating RTCS bus data...");
-		long start = System.currentTimeMillis();
-		this.serviceIdInts = extractUsefulServiceIdInts(args, this, true);
-		super.start(args);
-		MTLog.log("Generating RTCS bus data... DONE in %s.", Utils.getPrettyDuration(System.currentTimeMillis() - start));
+	public boolean defaultExcludeEnabled() {
+		return true;
 	}
 
+	@NotNull
 	@Override
-	public boolean excludingAll() {
-		return this.serviceIdInts != null && this.serviceIdInts.isEmpty();
-	}
-
-	@Override
-	public boolean excludeCalendar(@NotNull GCalendar gCalendar) {
-		if (this.serviceIdInts != null) {
-			return excludeUselessCalendarInt(gCalendar, this.serviceIdInts);
-		}
-		return super.excludeCalendar(gCalendar);
-	}
-
-	@Override
-	public boolean excludeCalendarDate(@NotNull GCalendarDate gCalendarDates) {
-		if (this.serviceIdInts != null) {
-			return excludeUselessCalendarDateInt(gCalendarDates, this.serviceIdInts);
-		}
-		return super.excludeCalendarDate(gCalendarDates);
-	}
-
-	@Override
-	public boolean excludeTrip(@NotNull GTrip gTrip) {
-		if (this.serviceIdInts != null) {
-			return excludeUselessTripInt(gTrip, this.serviceIdInts);
-		}
-		return super.excludeTrip(gTrip);
+	public String getAgencyName() {
+		return "RTCS";
 	}
 
 	@NotNull
@@ -248,9 +209,6 @@ public class ShawiniganRTCSBusAgencyTools extends DefaultAgencyTools {
 		return CleanUtils.cleanLabelFR(tripHeadsign);
 	}
 
-	private static final Pattern ET = Pattern.compile("((^|\\W)(et)(\\W|$))", Pattern.CASE_INSENSITIVE);
-	private static final String ET_REPLACEMENT = "$2&$4";
-
 	private static final Pattern START_WITH_FACE_A = Pattern.compile("^(face à )", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 	private static final Pattern START_WITH_FACE_AU = Pattern.compile("^(face au )", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 	private static final Pattern START_WITH_FACE = Pattern.compile("^(face )", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
@@ -268,12 +226,11 @@ public class ShawiniganRTCSBusAgencyTools extends DefaultAgencyTools {
 	@NotNull
 	@Override
 	public String cleanStopName(@NotNull String gStopName) {
-		gStopName = ET.matcher(gStopName).replaceAll(ET_REPLACEMENT);
 		gStopName = CleanUtils.CLEAN_ET.matcher(gStopName).replaceAll(CleanUtils.CLEAN_ET_REPLACEMENT);
 		gStopName = CleanUtils.SAINT.matcher(gStopName).replaceAll(CleanUtils.SAINT_REPLACEMENT);
 		gStopName = DEVANT_.matcher(gStopName).replaceAll(EMPTY);
-		gStopName = Utils.replaceAll(gStopName, START_WITH_FACES, CleanUtils.SPACE);
-		gStopName = Utils.replaceAll(gStopName, SPACE_FACES, CleanUtils.SPACE);
+		gStopName = RegexUtils.replaceAllNN(gStopName, START_WITH_FACES, CleanUtils.SPACE);
+		gStopName = RegexUtils.replaceAllNN(gStopName, SPACE_FACES, CleanUtils.SPACE);
 		gStopName = CleanUtils.cleanBounds(Locale.FRENCH, gStopName);
 		gStopName = CleanUtils.cleanNumbers(gStopName);
 		gStopName = CleanUtils.cleanStreetTypesFRCA(gStopName);

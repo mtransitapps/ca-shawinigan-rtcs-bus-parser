@@ -1,15 +1,17 @@
 package org.mtransit.parser.ca_shawinigan_rtcs_bus;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.mtransit.commons.CleanUtils;
 import org.mtransit.commons.RegexUtils;
 import org.mtransit.parser.DefaultAgencyTools;
 import org.mtransit.parser.mt.data.MAgency;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
-import static org.mtransit.parser.StringUtils.EMPTY;
+import static org.mtransit.commons.StringUtils.EMPTY;
 
 // http://www.shawinigan.ca/Ville/donnees-ouvertes_195.html
 // https://donnees-shawinigan.opendata.arcgis.com/
@@ -18,6 +20,12 @@ public class ShawiniganRTCSBusAgencyTools extends DefaultAgencyTools {
 
 	public static void main(@NotNull String[] args) {
 		new ShawiniganRTCSBusAgencyTools().start(args);
+	}
+
+	@Nullable
+	@Override
+	public List<Locale> getSupportedLanguages() {
+		return LANG_FR;
 	}
 
 	@Override
@@ -37,7 +45,22 @@ public class ShawiniganRTCSBusAgencyTools extends DefaultAgencyTools {
 		return MAgency.ROUTE_TYPE_BUS;
 	}
 
+	@Override
+	public boolean defaultRouteIdEnabled() {
+		return true;
+	}
+
+	@Override
+	public boolean useRouteShortNameForRouteId() {
+		return true;
+	}
+
 	private static final Pattern ENDS_W_COMMA_ = Pattern.compile("((?<=(\\w))(,)(.*)$)");
+
+	@Override
+	public boolean defaultRouteLongNameEnabled() {
+		return true;
+	}
 
 	@NotNull
 	@Override
@@ -46,6 +69,11 @@ public class ShawiniganRTCSBusAgencyTools extends DefaultAgencyTools {
 		routeLongName = CleanUtils.CLEAN_ET.matcher(routeLongName).replaceAll(CleanUtils.CLEAN_ET_REPLACEMENT);
 		routeLongName = CleanUtils.SAINT.matcher(routeLongName).replaceAll(CleanUtils.SAINT_REPLACEMENT);
 		return super.cleanRouteLongName(routeLongName);
+	}
+
+	@Override
+	public boolean defaultAgencyColorEnabled() {
+		return true;
 	}
 
 	private static final String AGENCY_COLOR_BLUE = "003769"; // BLUE (from PNG logo)

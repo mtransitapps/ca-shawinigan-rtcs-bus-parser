@@ -13,7 +13,6 @@ import java.util.regex.Pattern;
 
 import static org.mtransit.commons.StringUtils.EMPTY;
 
-// http://www.shawinigan.ca/Ville/donnees-ouvertes_195.html
 // https://donnees-shawinigan.opendata.arcgis.com/
 // https://jmap.shawinigan.ca/doc/photos/google_transit.zip
 public class ShawiniganRTCSBusAgencyTools extends DefaultAgencyTools {
